@@ -34,6 +34,8 @@ public class Order {
         this.status = status;
     }
 
+    private void setPrice(int p){}
+
     private int calcPrice() {
         int price = 0;
         return price;
