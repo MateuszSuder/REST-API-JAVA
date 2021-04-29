@@ -1,4 +1,4 @@
-package RESTAPIproject;
+package RESTAPIproject.classes;
 
 import java.util.ArrayList;
 

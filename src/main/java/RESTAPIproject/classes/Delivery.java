@@ -1,4 +1,4 @@
-package RESTAPIproject;
+package RESTAPIproject.classes;
 
 // Delivery details rather than delivery options
 public class Delivery {

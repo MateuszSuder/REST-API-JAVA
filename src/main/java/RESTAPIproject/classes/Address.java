@@ -1,4 +1,4 @@
-package RESTAPIproject;
+package RESTAPIproject.classes;
 
 public class Address {
     private String postcode;

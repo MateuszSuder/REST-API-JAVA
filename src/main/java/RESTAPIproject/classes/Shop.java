@@ -1,4 +1,4 @@
-package RESTAPIproject;
+package RESTAPIproject.classes;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -7,7 +7,7 @@ public class Shop {
     private ArrayList<Category> categories;
     private ArrayList<User> users;
 
-    Shop() {
+    public Shop() {
         categories = new ArrayList<Category>();
     }
 
@@ -31,5 +31,5 @@ public class Shop {
         categories.add(cat);
     }
 
-    public void initalizeShop() {}
+    public void initializeShop() {}
 }
