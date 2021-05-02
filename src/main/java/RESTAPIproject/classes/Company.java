@@ -6,7 +6,7 @@ public class Company {
     private String name;
     private UUID ID;
 
-    Company() {}
+    public Company() {}
 
     public String getName() {
         return name;
