@@ -7,7 +7,13 @@ public class Address {
     private String number; // if ex 21/4
     private String country;
     
-    Address(){}
+    Address(String ci, String co, String n, String p, String s) {
+        this.postcode = p;
+        this.city = ci;
+        this.street = s;
+        this.number = n;
+        this.country = co;
+    }
 
     public void setAddress() {
 

@@ -5,7 +5,7 @@ import RESTAPIproject.declarations.Permission;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class User {
+public class User implements java.io.Serializable {
     private ArrayList<Order> orders;
     private Delivery deliverDetails;
     private Company company;
@@ -19,6 +19,12 @@ public class User {
         this.permission = Permission.user;
 
         ID = UUID.randomUUID();
+    }
+
+    public User(String username, Permission permission, UUID id) {
+        this.username = username;
+        this.permission = permission;
+        this.ID = id;
     }
 
     public ArrayList<Order> getOrders() {
