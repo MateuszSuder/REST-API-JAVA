@@ -1,25 +1,21 @@
 package RESTAPIproject.classes;
 
 import RESTAPIproject.declarations.Permission;
-import RESTAPIproject.models.UserMutationInput;
-import com.opencsv.CSVReader;
 import org.springframework.http.HttpStatus;
 
 import java.io.*;
-import java.lang.reflect.InvocationHandler;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.io.FileOutputStream;
-import java.io.ObjectOutputStream;
 
 public class Shop {
     private ArrayList<Category> categories;
     private ConcurrentHashMap<UUID, User> users;
     private ConcurrentHashMap<UUID, Company> companies;
+    private ConcurrentHashMap<UUID, Product> products;
 
-    static private final String pathToFile = "test.txt";
-
-
+    /**
+     * Konstruktor
+     */
     public Shop() {
         categories = new ArrayList<Category>();
 
@@ -28,80 +24,55 @@ public class Shop {
         initializeShop();
     }
 
+    /**
+     *Getter zwracający globalną listę kategorii
+     * @return ArrayList<Category>
+     */
     public ArrayList<Category> getCategories() {
         return categories;
     }
 
-    public ConcurrentHashMap getUsers() {
+    /**
+     * Getter zwracający wszystkich dostępnych użytkowników
+     * @return ConcurrentHashMap<UUID, User>
+     */
+    public ConcurrentHashMap<UUID, User> getUsers() {
         return users;
     }
 
-    public User getUser(UUID id) throws CustomException {
-        if(users.containsKey(id)) {
-            return users.get(id);
-        } else {
-            throw new CustomException("User not found", HttpStatus.NOT_FOUND);
-        }
+    /**
+     *Getter zwracający globalną listę produktów
+     * @return ConcurrentHashMap<UUID, Product>
+     */
+    public ConcurrentHashMap<UUID, Product> getProducts() {
+        return products;
     }
 
-    public UUID addUser(String username) throws CustomException {
-        for (Map.Entry<UUID, User> entry : users.entrySet()) {
-            UUID k = entry.getKey();
-            User v = entry.getValue();
-            if (v.getUsername().equals(username)) {
-                throw new CustomException("User with same username already exists", HttpStatus.CONFLICT);
-            }
-        }
-        User user = new User(username);
-        UUID id = user.getID();
-
-        users.putIfAbsent(id, user);
-
-        try {
-            saveUsersToFile();
-        } catch(IOException e) {
-            e.printStackTrace();
-            throw new CustomException("Error while saving file", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        return id;
+    /**
+     *Getter zwracający globalną listę firm
+     * @return ConcurrentHashMap<UUID, Company>
+     */
+    public ConcurrentHashMap<UUID, Company> getCompanies() {
+        return companies;
     }
 
-    public void modifyUser(UUID userID, UserMutationInput input) throws CustomException {
-        try {
-            User u = getUser(userID);
-
-            if(input.companyID != null) {
-                if(companies.containsKey(input.companyID)) {
-                    u.setCompany(companies.get(input.companyID));
-                } else {
-                    throw new CustomException("Company not found", HttpStatus.NOT_FOUND);
-                }
+    /**
+     * Metoda do wyszukania kategorii o nazwie podanej w parametrze
+     * @param catName nazwa kategorii
+     * @return Category
+     */
+    public Category findCategory(String catName) throws CustomException {
+        for(Category c : categories) {
+            if(c.getName().equals(catName)) {
+                return c;
             }
-
-            if(input.deliveryDetails != null) {
-                u.setDeliverDetails(input.deliveryDetails);
-            }
-
-            if(input.permission != null) {
-                u.setPermission(input.permission);
-            }
-
-            try {
-                saveUsersToFile();
-            } catch(IOException e) {
-                e.printStackTrace();
-                throw new CustomException("Error while saving file", HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        } catch (CustomException e) {
-            throw new CustomException(e.getMessage(), e.getStatus());
         }
+        throw new CustomException("Category doesn't exist", HttpStatus.NOT_FOUND);
     }
 
-    public void addCategory(Category cat) {
-        categories.add(cat);
-    }
-
+    /**
+     * Metody zapisujace aktualny stan sklepu do pliku CSV
+     */
     public void saveUsersToFile() throws IOException {
         FileWriter userWriter = new FileWriter("users.csv");
         userWriter.append("ID");
@@ -177,6 +148,15 @@ public class Shop {
         deliveryWriter.close();
     }
 
+    public void saveCategoriesToFile() throws IOException {}
+
+    public void saveCompaniesToFile() throws IOException {}
+
+    public void saveProductsToFile() throws IOException {}
+
+    /**
+     * Metody pozyskujące zapisany stan sklepu z pliku CSV
+     */
     public void getUsersFromFile() throws IOException {
         BufferedReader userReader = new BufferedReader(new FileReader("users.csv"));
         BufferedReader deliveryReader = new BufferedReader(new FileReader("deliveries.csv"));
@@ -254,6 +234,15 @@ public class Shop {
         userReader.close();
     }
 
+    public void getCategoriesFromFile() throws IOException {}
+
+    public void getCompaniesFromFile() throws IOException {}
+
+    public void getProductsFromFile() throws IOException {}
+
+    /**
+     * Metoda inicjalizująca
+     */
     public void initializeShop() {
         try {
             getUsersFromFile();
@@ -262,7 +251,10 @@ public class Shop {
         }
     }
 
-    public class CustomException extends Exception {
+    /**
+     * Pomocnicza klasa do zarządzania specjalnymi wyjątkami
+     */
+    public static class CustomException extends Exception {
         HttpStatus status;
         public CustomException(String msg, HttpStatus status) {
             super(msg);

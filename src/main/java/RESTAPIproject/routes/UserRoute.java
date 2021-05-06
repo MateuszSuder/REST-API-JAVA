@@ -18,6 +18,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -56,10 +58,15 @@ public class UserRoute extends RestApiProjectApplication {
     })
     public ResponseEntity getUser(@PathVariable UUID id) {
         try {
-            User u = shop.getUser(id);
-            return ResponseEntity.ok(shop.getUser(id));
+            if(shop.getUsers().containsKey(id)) {
+                User u = shop.getUsers().get(id);
+                return ResponseEntity.ok(u);
+            } else {
+                throw new Shop.CustomException("User not found", HttpStatus.NOT_FOUND);
+            }
         } catch(Shop.CustomException e) {
-            return ResponseEntity.status(e.getStatus()).body(e);
+            ErrorResponse er = new ErrorResponse(e.getMessage(), e.getStatus().value());
+            return ResponseEntity.status(e.getStatus()).body(er);
         }
     }
 
@@ -72,6 +79,8 @@ public class UserRoute extends RestApiProjectApplication {
                             schema = @Schema(implementation = UUID.class))
             }),
             @ApiResponse(responseCode = "400", description = "Invalid input",
+                    content = @Content),
+            @ApiResponse(responseCode = "409", description = "User with same username already exists",
                     content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal Error",
                     content = @Content)
@@ -86,7 +95,24 @@ public class UserRoute extends RestApiProjectApplication {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(er);
         }
         try {
-            UUID id = shop.addUser(input.username);
+            for (Map.Entry<UUID, User> entry : shop.getUsers().entrySet()) {
+                UUID k = entry.getKey();
+                User v = entry.getValue();
+                if (v.getUsername().equals(input.username)) {
+                    throw new Shop.CustomException("User with same username already exists", HttpStatus.CONFLICT);
+                }
+            }
+            User user = new User(input.username);
+            UUID id = user.getID();
+
+            shop.getUsers().putIfAbsent(id, user);
+
+            try {
+                shop.saveUsersToFile();
+            } catch(IOException e) {
+                e.printStackTrace();
+                throw new Shop.CustomException("Error while saving file", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
             return ResponseEntity.status(HttpStatus.CREATED).contentType(APPLICATION_JSON).body(id);
         } catch(Shop.CustomException e) {
             ErrorResponse er = new ErrorResponse(e.getMessage(), e.getStatus().value());
@@ -96,11 +122,70 @@ public class UserRoute extends RestApiProjectApplication {
 
     @PostMapping(value = "{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Modify user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User modified", content = {
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = UUID.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "Invalid input",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal Error",
+                    content = @Content)
+    })
     public ResponseEntity mutateUser(@PathVariable UUID id, @RequestBody UserMutationInput input) {
         try {
-            shop.modifyUser(id, input);
+            User u = shop.getUsers().get(id);
+
+            if(input.companyID != null) {
+                if(shop.getCompanies().containsKey(input.companyID)) {
+                    u.setCompany(shop.getCompanies().get(input.companyID));
+                } else {
+                    throw new Shop.CustomException("Company not found", HttpStatus.NOT_FOUND);
+                }
+            }
+
+            if(input.deliveryDetails != null) {
+                u.setDeliverDetails(input.deliveryDetails);
+            }
+
+            if(input.permission != null) {
+                u.setPermission(input.permission);
+            }
+
+            try {
+                shop.saveUsersToFile();
+            } catch(IOException e) {
+                e.printStackTrace();
+                throw new Shop.CustomException("Error while saving file", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
             return ResponseEntity.status(HttpStatus.OK).body(null);
         } catch(Shop.CustomException e) {
+            ErrorResponse er = new ErrorResponse(e.getMessage(), e.getStatus().value());
+            return ResponseEntity.status(e.getStatus()).body(er);
+        }
+    }
+
+    @DeleteMapping(value = "{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Delete user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User deleted",
+                    content = @Content),
+            @ApiResponse(responseCode = "400", description = "Invalid input",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "User not found",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal Error",
+                    content = @Content)
+    })
+    public ResponseEntity deleteUser(@PathVariable UUID id) {
+        try {
+            if(shop.getUsers().containsKey(id)) {
+                shop.getUsers().remove(id);
+            } else {
+                throw new Shop.CustomException("User not found", HttpStatus.NOT_FOUND);
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(null);
+        } catch (Shop.CustomException e) {
             ErrorResponse er = new ErrorResponse(e.getMessage(), e.getStatus().value());
             return ResponseEntity.status(e.getStatus()).body(er);
         }
