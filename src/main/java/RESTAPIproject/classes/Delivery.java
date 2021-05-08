@@ -17,26 +17,50 @@ public class Delivery {
         this.address = a;
     }
 
+    /**
+     * Zwraca adres
+     * @return Address
+     */
     public Address getAddress() {
         return address;
     }
 
+    /**
+     * Ustawia adres dostawy
+     * @param address adres
+     */
     public void setAddress(Address address) {
         this.address = address;
     }
 
+    /**
+     * Zwraca imie
+     * @return String
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Ustawia imie
+     * @param name imie
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * Zwraca nazwisko
+     * @return String
+     */
     public String getLastName() {
         return lastName;
     }
 
+    /**
+     * Ustawia nazwisko
+     * @param lastName nazwisko
+     */
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }

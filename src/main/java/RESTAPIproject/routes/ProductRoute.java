@@ -50,7 +50,8 @@ public class ProductRoute extends RestApiProjectApplication  {
             description = "Get product by UUID specified in path variable")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Query successful", content = {
-                    @Content(mediaType = "application/json")
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Product.class))
             }),
             @ApiResponse(responseCode = "404", description = "Product not found", content = {
                     @Content(mediaType = "application/json")
@@ -68,4 +69,10 @@ public class ProductRoute extends RestApiProjectApplication  {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(er);
         }
     }
+
+    public void addProduct() {}
+
+    public void modifyProduct() {}
+
+    public void deleteProduct() {}
 }
