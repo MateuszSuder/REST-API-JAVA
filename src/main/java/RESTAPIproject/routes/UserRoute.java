@@ -59,8 +59,7 @@ public class UserRoute extends RestApiProjectApplication {
     public ResponseEntity getUser(@PathVariable UUID id) {
         try {
             if(shop.getUsers().containsKey(id)) {
-                User u = shop.getUsers().get(id);
-                return ResponseEntity.ok(u);
+                return ResponseEntity.ok(shop.getUser(id));
             } else {
                 throw new Shop.CustomException("User not found", HttpStatus.NOT_FOUND);
             }

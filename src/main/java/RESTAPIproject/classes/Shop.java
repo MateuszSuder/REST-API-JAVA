@@ -40,6 +40,10 @@ public class Shop {
         return users;
     }
 
+    public User getUser(UUID id) {
+        return users.get(id);
+    }
+
     /**
      *Getter zwracający globalną listę produktów
      * @return ConcurrentHashMap<UUID, Product>

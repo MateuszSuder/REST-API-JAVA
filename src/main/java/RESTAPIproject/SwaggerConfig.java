@@ -1,5 +1,6 @@
 package RESTAPIproject;
 
+import RESTAPIproject.classes.Delivery;
 import RESTAPIproject.models.ProductsResult;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

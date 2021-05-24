@@ -8,8 +8,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import java.io.IOException;
-
 @Configuration
 @EnableWebMvc
 @SpringBootApplication
@@ -17,7 +15,7 @@ import java.io.IOException;
 @Api(tags = "Main controller")
 public class RestApiProjectApplication {
 
-	public Shop shop = new Shop();
+	public static Shop shop = new Shop();
 
 	public static void main(String[] args) {
 		SpringApplication.run(RestApiProjectApplication.class, args);
@@ -27,4 +25,5 @@ public class RestApiProjectApplication {
 	public String health() {
 			return "healthy";
 	}
+
 }
