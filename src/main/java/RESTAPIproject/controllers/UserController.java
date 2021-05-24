@@ -1,4 +1,4 @@
-package RESTAPIproject.routes;
+package RESTAPIproject.controllers;
 
 import RESTAPIproject.RestApiProjectApplication;
 import RESTAPIproject.classes.Shop;
@@ -29,7 +29,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @RequestMapping("/user")
 @SpringBootApplication
 @Api(tags = "User")
-public class UserRoute extends RestApiProjectApplication {
+public class UserController extends RestApiProjectApplication {
 
     @GetMapping("")
     @Operation(summary = "Get all users")

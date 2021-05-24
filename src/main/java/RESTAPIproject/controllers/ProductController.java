@@ -1,10 +1,8 @@
-package RESTAPIproject.routes;
+package RESTAPIproject.controllers;
 
 import RESTAPIproject.RestApiProjectApplication;
 import RESTAPIproject.classes.Product;
-import RESTAPIproject.classes.User;
 import RESTAPIproject.models.ErrorResponse;
-import RESTAPIproject.models.ProductsResult;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,22 +11,18 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
 @RequestMapping("/product")
 @SpringBootApplication
 @Api(tags = "Product")
-public class ProductRoute extends RestApiProjectApplication  {
+public class ProductController extends RestApiProjectApplication  {
 
     @GetMapping(value = "")
     @Operation(summary = "Get all products",

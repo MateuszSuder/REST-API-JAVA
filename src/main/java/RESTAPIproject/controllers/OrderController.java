@@ -1,7 +1,7 @@
-package RESTAPIproject.routes;
+package RESTAPIproject.controllers;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @RequestMapping("/order")
-public class OrderRoute {
+public class OrderController {
 }

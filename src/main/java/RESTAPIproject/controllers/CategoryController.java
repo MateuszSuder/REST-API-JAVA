@@ -1,4 +1,4 @@
-package RESTAPIproject.routes;
+package RESTAPIproject.controllers;
 
 import RESTAPIproject.RestApiProjectApplication;
 import RESTAPIproject.classes.Category;
@@ -9,13 +9,10 @@ import RESTAPIproject.models.ErrorResponse;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Description;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequestMapping("/category")
 @SpringBootApplication
 @Api(tags = "Category")
-public class CategoryRoute extends RestApiProjectApplication {
+public class CategoryController extends RestApiProjectApplication {
 
     @GetMapping("")
     @Operation(summary = "Get all categories",

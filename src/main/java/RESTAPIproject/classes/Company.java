@@ -7,8 +7,8 @@ public class Company {
     private UUID ID;
 
     public Company(String n) {
-        this.name = n;
-        this.ID = UUID.randomUUID();
+        name = n;
+        ID = UUID.randomUUID();
     }
 
     /**
@@ -26,5 +26,9 @@ public class Company {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    public UUID getID() {
+        return ID;
     }
 }

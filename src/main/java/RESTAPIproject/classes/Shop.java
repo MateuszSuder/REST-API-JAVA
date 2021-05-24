@@ -18,8 +18,9 @@ public class Shop {
      */
     public Shop() {
         categories = new ArrayList<Category>();
-
         users = new ConcurrentHashMap<UUID, User>();
+        companies = new ConcurrentHashMap<UUID, Company>();
+        products = new ConcurrentHashMap<UUID, Product>();
 
         initializeShop();
     }
@@ -40,8 +41,11 @@ public class Shop {
         return users;
     }
 
-    public User getUser(UUID id) {
-        return users.get(id);
+    public User getUser(UUID id) throws CustomException {
+        if(users.containsKey(id)) {
+            return users.get(id);
+        }
+        throw new CustomException("User with given id doesn't exist", HttpStatus.NOT_FOUND);
     }
 
     /**
@@ -58,6 +62,13 @@ public class Shop {
      */
     public ConcurrentHashMap<UUID, Company> getCompanies() {
         return companies;
+    }
+
+    public Company getCompany(UUID id) throws CustomException {
+        if(companies.containsKey(id)) {
+            return companies.get(id);
+        }
+        throw new CustomException("Company with given id doesn't exist", HttpStatus.NOT_FOUND);
     }
 
     /**

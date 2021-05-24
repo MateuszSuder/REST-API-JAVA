@@ -12,7 +12,7 @@ public class User implements java.io.Serializable {
 
     private String username;
     private Permission permission;
-    private UUID ID;
+    private final UUID ID;
 
     public User(String username) {
         this.username = username;
