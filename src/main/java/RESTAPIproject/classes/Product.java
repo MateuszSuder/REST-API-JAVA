@@ -11,17 +11,13 @@ public class Product {
     private int price; // In pennies
     private String description;
     private ConcurrentHashMap<String, ArrayList<String>> specification;
-    private int Amount;
+    private int amount;
     private UUID ID;
 
-    Product(
-            String name,
-            int price,
-            String description,
-            ConcurrentHashMap<String, ArrayList<String>> specification,
-            int Amount
-    ) {
+    public Product(String name) {
+        this.name = name;
 
+        ID = UUID.randomUUID();
     }
 
     /**
@@ -46,7 +42,7 @@ public class Product {
      * @return int
      */
     public int getAmount() {
-        return Amount;
+        return amount;
     }
 
     /**
@@ -55,7 +51,7 @@ public class Product {
      * @return void
      */
     public void setAmount(int amount) {
-        Amount = amount;
+        this.amount = amount;
     }
 
     /**
@@ -123,4 +119,8 @@ public class Product {
      * @return void
      */
     public void addPropertyToCategory(ArrayList properties, String categoryName) {}
+
+    public UUID getID() {
+        return ID;
+    }
 }

@@ -65,6 +65,7 @@ public class CompanyController extends RestApiProjectApplication {
 
     @PostMapping("")
     @Operation(summary = "Create company with given name")
+    @ResponseStatus(HttpStatus.CREATED)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Company created", content = {
                     @Content(mediaType = "application/json",

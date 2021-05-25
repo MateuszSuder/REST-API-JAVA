@@ -42,6 +42,7 @@ public class CategoryController extends RestApiProjectApplication {
     @PostMapping("")
     @Operation(summary = "Add new category",
             description = "Adds category with name provided in body")
+    @ResponseStatus(HttpStatus.CREATED)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Category created", content = {
                     @Content(mediaType = "application/json")
