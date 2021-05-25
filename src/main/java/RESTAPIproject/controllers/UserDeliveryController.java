@@ -22,7 +22,7 @@ import java.util.UUID;
 
 @RequestMapping("/user/{id}/delivery")
 @SpringBootApplication
-@Api(tags = "User")
+@Api(tags = "User", description = "User Controller")
 public class UserDeliveryController extends RestApiProjectApplication {
 
     @GetMapping(value = "fix")

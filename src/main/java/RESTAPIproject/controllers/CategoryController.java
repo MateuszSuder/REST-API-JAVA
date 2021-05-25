@@ -140,7 +140,7 @@ public class CategoryController extends RestApiProjectApplication {
         }
     }
 
-    @PostMapping("{name}/remove")
+    @DeleteMapping("{name}/remove")
     @Operation(summary = "Remove products from category",
             description = "Delete each product from array from Request Body from category that was provided in Path Variable")
     @ApiResponses(value = {

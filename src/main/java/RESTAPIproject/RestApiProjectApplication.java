@@ -21,9 +21,4 @@ public class RestApiProjectApplication {
 		SpringApplication.run(RestApiProjectApplication.class, args);
 	}
 
-	@GetMapping("health")
-	public String health() {
-			return "healthy";
-	}
-
 }
