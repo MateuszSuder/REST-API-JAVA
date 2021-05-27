@@ -12,6 +12,7 @@ public class Shop {
     private ConcurrentHashMap<UUID, User> users;
     private ConcurrentHashMap<UUID, Company> companies;
     private ConcurrentHashMap<UUID, Product> products;
+    private ConcurrentHashMap<UUID, Order> orders;
 
     /**
      * Konstruktor
@@ -21,6 +22,7 @@ public class Shop {
         users = new ConcurrentHashMap<UUID, User>();
         companies = new ConcurrentHashMap<UUID, Company>();
         products = new ConcurrentHashMap<UUID, Product>();
+        orders = new ConcurrentHashMap<UUID, Order>();
 
         initializeShop();
     }
@@ -54,6 +56,34 @@ public class Shop {
      */
     public ConcurrentHashMap<UUID, Product> getProducts() {
         return products;
+    }
+
+    public Product getProduct(UUID id) throws CustomException {
+        if(products.containsKey(id)) {
+            return products.get(id);
+        }
+        throw new CustomException("Product with given id doesn't exist", HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     *Getter zwracający globalną listę zamowien
+     * @return ConcurrentHashMap<UUID, Product>
+     */
+    public ConcurrentHashMap<UUID, Order> getOrders() {
+        return orders;
+    }
+
+    /**
+     *Getter zwracający zamowienie z id podanym w argumencie
+     * @param id ID zamowienia
+     * @return Order
+     */
+    public Order getOrder(UUID id) throws CustomException {
+        if(orders.containsKey(id)) {
+            return orders.get(id);
+        } else {
+            throw new CustomException("Order with given id doesn't exists", HttpStatus.NOT_FOUND);
+        }
     }
 
     /**

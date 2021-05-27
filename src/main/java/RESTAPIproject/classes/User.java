@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class User implements java.io.Serializable {
-    private ArrayList<Order> orders;
     private Delivery deliverDetails;
     private Company company;
 
@@ -25,14 +24,6 @@ public class User implements java.io.Serializable {
         this.username = username;
         this.permission = permission;
         this.ID = id;
-    }
-
-    /**
-     * Zwraca liste zamowien uzytkownika
-     * @return ArrayList
-     */
-    public ArrayList<Order> getOrders() {
-        return orders;
     }
 
     /**

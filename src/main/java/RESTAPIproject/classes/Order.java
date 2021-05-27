@@ -1,53 +1,52 @@
 package RESTAPIproject.classes;
 
+import RESTAPIproject.declarations.OrderStatus;
+import RESTAPIproject.declarations.Status;
+import RESTAPIproject.models.ProductQuantity;
+import org.springframework.http.HttpStatus;
+
 import java.util.ArrayList;
 import java.util.UUID;
 
-enum Status {
-    WaitingForCompletion,
-    Ordered,
-    PaymentDone,
-    Shipped,
-    Delivered
-}
-
 public class Order {
-    private ArrayList<Product> items;
-    private User user;
-    private Delivery delivery;
+    private final ArrayList<ProductQuantity> items;
+    private final int price; // In pennies
+    private final UUID ID;
+    private final User user;
+    private final Delivery delivery;
 
-    private int price; // In pennies
-    private Status status;
-    private UUID ID;
+    private ArrayList<OrderStatus> status;
 
-    Order() {}
 
-    /**
-     * Zwraca proudkty z zamowienia
-     * @return ArrayList
-     */
-    public ArrayList<Product> getItems() {
-        return items;
+    public Order(ArrayList<ProductQuantity> i, User u, Delivery d) throws Shop.CustomException {
+        for(ProductQuantity p : i) {
+            if(p.quantity <= 0) {
+                throw new Shop.CustomException(p.quantity + " is not correct quantity", HttpStatus.BAD_REQUEST);
+            }
+            if(p.quantity > p.product.getAmount()) {
+                throw new Shop.CustomException("Not enough products in store", HttpStatus.BAD_REQUEST);
+            }
+        }
+
+        for(ProductQuantity p : i) {
+            p.product.setAmount(p.product.getAmount() - p.quantity);
+        }
+        items = i;
+        user = u;
+        delivery = d;
+        ID = UUID.randomUUID();
+
+        status.add(new OrderStatus(Status.Ordered));
+
+        price = calcPrice(i);
     }
 
     /**
-     * Dodaje pojedynczy produkt do zamowienia
-     * @param p produkt do dodania do zamowienia
+     * Zwraca produkty z zamowienia
+     * @return ArrayList
      */
-    public void addItems(Product p) {}
-
-    /**
-     * Dodaje liste produktow do zamowienia
-     * @param p lista produktow do dodania do zamowienia
-     */
-    public void addItems(ArrayList<Product> p) {}
-
-    /**
-     * Ustawia dane do dostawy
-     * @param delivery dane dostawy
-     */
-    public void setDelivery(Delivery delivery) {
-        this.delivery = delivery;
+    public ArrayList<ProductQuantity> getItems() {
+        return items;
     }
 
     /**
@@ -55,21 +54,20 @@ public class Order {
      * @param status status zamowienia
      */
     public void setStatus(Status status) {
-        this.status = status;
+        this.status.add(new OrderStatus(status));
     }
-
-    /**
-     * Ustawia cene
-     * @param p cena
-     */
-    private void setPrice(int p){}
 
     /**
      * Liczy cene
      * @return int
      */
-    private int calcPrice() {
+    private int calcPrice(ArrayList<ProductQuantity> ps) {
         int price = 0;
+
+        for(ProductQuantity p : ps) {
+            price += p.product.getPrice() * p.quantity;
+        }
+
         return price;
     }
 
@@ -79,5 +77,25 @@ public class Order {
      */
     public int getPrice() {
         return price;
+    }
+
+    public UUID getID() {
+        return ID;
+    }
+
+    public ArrayList<OrderStatus> getStatus() {
+        return status;
+    }
+
+    public Delivery getDelivery() {
+        return delivery;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public UUID getUserID() {
+        return user.getID();
     }
 }
