@@ -1,6 +1,7 @@
 package RESTAPIproject.controllers;
 
 import RESTAPIproject.RestApiProjectApplication;
+import RESTAPIproject.classes.Address;
 import RESTAPIproject.classes.Delivery;
 import RESTAPIproject.classes.Shop;
 import RESTAPIproject.classes.User;
@@ -18,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.UUID;
 
 @RequestMapping("/user/{id}/delivery")
@@ -65,10 +67,18 @@ public class UserDeliveryController extends RestApiProjectApplication {
                     content = @Content)
     })
     public ResponseEntity mutateDelivery(@PathVariable UUID id, @RequestBody DeliveryInput input) {
-        Delivery d = new Delivery(input.name, input.lastName);
+        Address a = new Address(
+                input.address.getCity(),
+                input.address.getCountry(),
+                input.address.getNumber(),
+                input.address.getPostcode(),
+                input.address.getStreet()
+        );
+        Delivery d = new Delivery(input.name, input.lastName, a);
         try {
             if(shop.getUsers().containsKey(id)) {
                 shop.getUser(id).setDeliverDetails(d);
+                shop.saveUsersToFile();
                 return ResponseEntity.status(HttpStatus.OK).body(null);
             } else {
                 throw new Shop.CustomException("User not found", HttpStatus.NOT_FOUND);
@@ -76,6 +86,9 @@ public class UserDeliveryController extends RestApiProjectApplication {
         } catch(Shop.CustomException e) {
             ErrorResponse er = new ErrorResponse(e.getMessage(), e.getStatus().value());
             return ResponseEntity.status(e.getStatus()).body(er);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 
@@ -93,6 +106,7 @@ public class UserDeliveryController extends RestApiProjectApplication {
                 User u = shop.getUsers().get(id);
                 if(u.getDeliverDetails() != null) {
                     u.setDeliverDetails(null) ;
+                    shop.saveUsersToFile();
                     return ResponseEntity.status(HttpStatus.OK).body(null);
                 }
                 throw new Shop.CustomException("User has no delivery details", HttpStatus.NOT_FOUND);
@@ -102,6 +116,9 @@ public class UserDeliveryController extends RestApiProjectApplication {
         } catch(Shop.CustomException e) {
             ErrorResponse er = new ErrorResponse(e.getMessage(), e.getStatus().value());
             return ResponseEntity.status(e.getStatus()).body(er);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 }

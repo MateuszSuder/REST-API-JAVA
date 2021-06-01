@@ -1,8 +1,9 @@
 package RESTAPIproject.classes;
 
 
+import RESTAPIproject.declarations.Specification;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -10,12 +11,14 @@ public class Product {
     private String name;
     private int price; // In pennies
     private String description;
-    private ConcurrentHashMap<String, ArrayList<String>> specification;
+    private ArrayList<Specification> specification;
     private int amount;
     private UUID ID;
 
     public Product(String name) {
         this.name = name;
+
+        specification = new ArrayList<>();
 
         ID = UUID.randomUUID();
     }
@@ -92,7 +95,7 @@ public class Product {
      * Zwraca specyfikacje produktu
      * @return ConcurrentHashMap<String, ArrayList<String>>
      */
-    public ConcurrentHashMap<String, ArrayList<String>> getSpecification() {
+    public ArrayList<Specification> getSpecification() {
         return specification;
     }
 
@@ -101,7 +104,7 @@ public class Product {
      * @param specification specyfikacja
      * @return void
      */
-    public void setSpecification(ConcurrentHashMap<String, ArrayList<String>> specification) {
+    public void setSpecification(ArrayList<Specification> specification) {
         String test = this.specification.toString();
         this.specification = specification;
     }

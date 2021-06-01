@@ -9,6 +9,8 @@ public class Category {
 
     public Category(String categoryName) {
         name = categoryName;
+
+        products = new ArrayList<>();
     }
 
     /**
@@ -51,5 +53,22 @@ public class Category {
      */
     public void addProducts(Product product) {
         this.products.add(product);
+    }
+
+    /**
+     * Usuwa produkty do kategorii
+     * @param products lista produktow do dodania
+     * @return void
+     */
+    public void removeProducts(ArrayList<Product> products) {
+        this.products.removeAll(products);
+    }
+
+    /**
+     * Usuwa pojedynczy produkt do kategorii
+     * @param product produkt do dodania
+     */
+    public void removeProduct(Product product) {
+        this.products.remove(product);
     }
 }

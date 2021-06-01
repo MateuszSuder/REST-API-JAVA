@@ -8,6 +8,7 @@ import java.util.UUID;
 public class User implements java.io.Serializable {
     private Delivery deliverDetails;
     private Company company;
+    private ArrayList<Order> orders;
 
     private String username;
     private Permission permission;
@@ -88,5 +89,13 @@ public class User implements java.io.Serializable {
      */
     public UUID getID() {
         return ID;
+    }
+
+    public void addOrder(Order o) {
+        orders.add(o);
+    }
+
+    public ArrayList<Order> getOrders() {
+        return orders;
     }
 }

@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -102,6 +103,13 @@ public class ProductController extends RestApiProjectApplication  {
             }
 
             shop.getProducts().put(p.getID(), p);
+
+            try {
+                shop.saveProductsToFile();
+            } catch(IOException e) {
+                e.printStackTrace();
+                throw new Shop.CustomException("Error while saving file", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
             return ResponseEntity.status(HttpStatus.CREATED).body(p.getID());
         } catch(Shop.CustomException e) {
             ErrorResponse er = new ErrorResponse(e.getMessage(), e.getStatus().value());
@@ -153,6 +161,13 @@ public class ProductController extends RestApiProjectApplication  {
             }
 
             shop.getProducts().put(p.getID(), p);
+
+            try {
+                shop.saveProductsToFile();
+            } catch(IOException e) {
+                e.printStackTrace();
+                throw new Shop.CustomException("Error while saving file", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
             return ResponseEntity.status(HttpStatus.OK).body(null);
         } catch(Shop.CustomException e) {
             ErrorResponse er = new ErrorResponse(e.getMessage(), e.getStatus().value());
@@ -172,6 +187,12 @@ public class ProductController extends RestApiProjectApplication  {
         try {
             if(shop.getProducts().containsKey(id)) {
                 shop.getProducts().remove(id);
+                try {
+                    shop.saveProductsToFile();
+                } catch(IOException e) {
+                    e.printStackTrace();
+                    throw new Shop.CustomException("Error while saving file", HttpStatus.INTERNAL_SERVER_ERROR);
+                }
                 return ResponseEntity.status(HttpStatus.OK).body(null);
             } else {
                 throw new Shop.CustomException("Product with given id doesn't exist", HttpStatus.NOT_FOUND);

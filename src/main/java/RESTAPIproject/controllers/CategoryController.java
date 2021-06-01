@@ -4,11 +4,13 @@ import RESTAPIproject.RestApiProjectApplication;
 import RESTAPIproject.classes.Category;
 import RESTAPIproject.classes.Product;
 import RESTAPIproject.classes.Shop;
+import RESTAPIproject.declarations.CategoriesResult;
 import RESTAPIproject.models.CategoryInput;
 import RESTAPIproject.models.ErrorResponse;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,6 +18,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,8 +29,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @Api(tags = "Category")
 public class CategoryController extends RestApiProjectApplication {
 
-    @GetMapping("")
-    @Operation(summary = "Get all categories",
+    @GetMapping("all")
+    @Deprecated
+    @Operation(summary = "Get all categories with products",
             description = "Return all categories")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Query successful", content = {
@@ -35,8 +40,30 @@ public class CategoryController extends RestApiProjectApplication {
             @ApiResponse(responseCode = "500", description = "Internal Error",
                     content = @Content)
     })
-    public ArrayList<Category> getCategories() {
+    public ArrayList<Category> getCategoriesWithProducts() {
         return shop.getCategories();
+    }
+
+    @GetMapping("")
+    @Operation(summary = "Get all categories",
+            description = "Return all categories")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Query successful", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = CategoriesResult.class))
+            }),
+            @ApiResponse(responseCode = "500", description = "Internal Error",
+                    content = @Content)
+    })
+    public ArrayList<CategoriesResult> getCategories() {
+        ArrayList<CategoriesResult> res = new ArrayList<>();
+        ArrayList<Category> l = shop.getCategories();
+
+        for(Category c : l) {
+            CategoriesResult cr = new CategoriesResult();
+            cr.categoryName = c.getName();
+            res.add(cr);
+        }
+        return res;
     }
 
     @PostMapping("")
@@ -71,10 +98,14 @@ public class CategoryController extends RestApiProjectApplication {
             }
 
             shop.getCategories().add(cat);
+            shop.saveCategoriesToFile();
             return ResponseEntity.status(HttpStatus.CREATED).body(null);
         } catch (Shop.CustomException e) {
             ErrorResponse er = new ErrorResponse(e.getMessage(), e.getStatus().value());
             return ResponseEntity.status(e.getStatus()).body(er);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 
@@ -95,10 +126,14 @@ public class CategoryController extends RestApiProjectApplication {
         try {
             Category c = shop.findCategory(name);
             c.setName(after.categoryName);
+            shop.saveCategoriesToFile();
             return ResponseEntity.status(HttpStatus.OK).body(null);
         } catch (Shop.CustomException e) {
             ErrorResponse er = new ErrorResponse(e.getMessage(), e.getStatus().value());
             return ResponseEntity.status(e.getStatus()).body(er);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 
@@ -131,6 +166,12 @@ public class CategoryController extends RestApiProjectApplication {
             for(Category c : shop.getCategories()) {
                 if (c.getName().equals(name)) {
                     c.addProducts(ps);
+                    try {
+                        shop.saveCategoriesToFile();
+                    } catch(IOException e) {
+                        e.printStackTrace();
+                        throw new Shop.CustomException("Error while saving file", HttpStatus.INTERNAL_SERVER_ERROR);
+                    }
                     return ResponseEntity.status(HttpStatus.OK).body(null);
                 }
             }
@@ -155,7 +196,39 @@ public class CategoryController extends RestApiProjectApplication {
                     content = @Content)
     })
     public ResponseEntity deleteProductsFromCategory(@PathVariable String name, @RequestBody ArrayList<UUID> products) {
-        return ResponseEntity.ok(null);
+        try {
+            Category c = shop.findCategory(name);
+            for(UUID id : products) {
+                Product p = shop.getProduct(id);
+                c.removeProduct(p);
+            }
+
+            return ResponseEntity.ok(null);
+        } catch (Shop.CustomException e) {
+            ErrorResponse er = new ErrorResponse(e.getMessage(), e.getStatus().value());
+            return ResponseEntity.status(e.getStatus()).body(er);
+        }
+    }
+
+    @GetMapping("{name}")
+    @Operation(summary = "Get all products from category")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Query successful",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "Category not found",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal Error",
+                    content = @Content)
+    })
+    public ResponseEntity getProductsFromCategory(@PathVariable String name) {
+        try {
+            Category c = shop.findCategory(name);
+
+            return ResponseEntity.status(HttpStatus.OK).body(c.getProducts());
+        } catch (Shop.CustomException e) {
+            ErrorResponse er = new ErrorResponse(e.getMessage(), e.getStatus().value());
+            return ResponseEntity.status(e.getStatus()).body(er);
+        }
     }
 
     @DeleteMapping("{name}")
@@ -178,6 +251,7 @@ public class CategoryController extends RestApiProjectApplication {
             Category c = shop.findCategory(categoryName);
             if(c.getProducts().size() == 0) {
                 shop.getCategories().remove(c);
+                shop.saveCategoriesToFile();
             } else {
                 throw new Shop.CustomException("Category not empty", HttpStatus.NOT_ACCEPTABLE);
             }
@@ -185,6 +259,9 @@ public class CategoryController extends RestApiProjectApplication {
         } catch (Shop.CustomException e) {
             ErrorResponse er = new ErrorResponse(e.getMessage(), e.getStatus().value());
             return ResponseEntity.status(e.getStatus()).body(er);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 }

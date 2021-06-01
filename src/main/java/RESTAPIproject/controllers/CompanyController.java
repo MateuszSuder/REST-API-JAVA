@@ -98,6 +98,13 @@ public class CompanyController extends RestApiProjectApplication {
 
             shop.getCompanies().putIfAbsent(id, c);
 
+            try {
+                shop.saveCompaniesToFile();
+            } catch(IOException e) {
+                e.printStackTrace();
+                throw new Shop.CustomException("Error while saving file", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
             return ResponseEntity.status(HttpStatus.CREATED).contentType(APPLICATION_JSON).body(id);
         } catch(Shop.CustomException e) {
             ErrorResponse er = new ErrorResponse(e.getMessage(), e.getStatus().value());
@@ -135,6 +142,13 @@ public class CompanyController extends RestApiProjectApplication {
             Company c = shop.getCompany(id);
             c.setName(i.name);
 
+            try {
+                shop.saveCompaniesToFile();
+            } catch(IOException e) {
+                e.printStackTrace();
+                throw new Shop.CustomException("Error while saving file", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
             return ResponseEntity.status(HttpStatus.OK).body(null);
         } catch(Shop.CustomException e) {
             ErrorResponse er = new ErrorResponse(e.getMessage(), e.getStatus().value());
@@ -153,6 +167,14 @@ public class CompanyController extends RestApiProjectApplication {
         try {
             shop.getCompany(id);
             shop.getCompanies().remove(id);
+
+            try {
+                shop.saveCompaniesToFile();
+            } catch(IOException e) {
+                e.printStackTrace();
+                throw new Shop.CustomException("Error while saving file", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
             return ResponseEntity.status(HttpStatus.OK).body(null);
         } catch(Shop.CustomException e) {
             ErrorResponse er = new ErrorResponse(e.getMessage(), e.getStatus().value());

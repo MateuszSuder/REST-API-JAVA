@@ -2,7 +2,7 @@ package RESTAPIproject.classes;
 
 import RESTAPIproject.declarations.OrderStatus;
 import RESTAPIproject.declarations.Status;
-import RESTAPIproject.models.ProductQuantity;
+import RESTAPIproject.declarations.ProductQuantity;
 import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
@@ -12,13 +12,14 @@ public class Order {
     private final ArrayList<ProductQuantity> items;
     private final int price; // In pennies
     private final UUID ID;
-    private final User user;
+    private final UUID userID;
     private final Delivery delivery;
 
-    private ArrayList<OrderStatus> status;
+    private final ArrayList<OrderStatus> status;
 
 
-    public Order(ArrayList<ProductQuantity> i, User u, Delivery d) throws Shop.CustomException {
+    public Order(ArrayList<ProductQuantity> i, UUID uid, Delivery d) throws Shop.CustomException {
+        status = new ArrayList<OrderStatus>();
         for(ProductQuantity p : i) {
             if(p.quantity <= 0) {
                 throw new Shop.CustomException(p.quantity + " is not correct quantity", HttpStatus.BAD_REQUEST);
@@ -32,13 +33,31 @@ public class Order {
             p.product.setAmount(p.product.getAmount() - p.quantity);
         }
         items = i;
-        user = u;
+        userID = uid;
         delivery = d;
         ID = UUID.randomUUID();
 
         status.add(new OrderStatus(Status.Ordered));
 
         price = calcPrice(i);
+    }
+
+    public Order(ArrayList<ProductQuantity> i, int price, UUID id, UUID userID, Delivery d, ArrayList<OrderStatus> s) throws Shop.CustomException {
+        for(ProductQuantity p : i) {
+            if(p.quantity <= 0) {
+                throw new Shop.CustomException(p.quantity + " is not correct quantity", HttpStatus.BAD_REQUEST);
+            }
+            if(p.quantity > p.product.getAmount()) {
+                throw new Shop.CustomException("Not enough products in store", HttpStatus.BAD_REQUEST);
+            }
+        }
+
+        items = i;
+        this.price = price;
+        ID = id;
+        this.userID = userID;
+        delivery = d;
+        status = s;
     }
 
     /**
@@ -91,11 +110,7 @@ public class Order {
         return delivery;
     }
 
-    public User getUser() {
-        return user;
-    }
-
     public UUID getUserID() {
-        return user.getID();
+        return userID;
     }
 }

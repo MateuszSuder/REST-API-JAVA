@@ -12,6 +12,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Description;
 import org.springframework.http.HttpStatus;
@@ -31,6 +33,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @SpringBootApplication
 @Api(tags = "User")
 public class UserController extends RestApiProjectApplication {
+
+    public Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @GetMapping("")
     @Operation(summary = "Get all users")

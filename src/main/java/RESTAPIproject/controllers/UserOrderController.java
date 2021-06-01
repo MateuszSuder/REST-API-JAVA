@@ -21,7 +21,7 @@ import java.util.UUID;
 
 @RequestMapping("/user/{userid}/order")
 @SpringBootApplication
-@Api(tags = "Order")
+@Api(tags = "User", description = "User Controller")
 public class UserOrderController extends RestApiProjectApplication {
 
     @GetMapping(value = "")

@@ -1,5 +1,7 @@
 package RESTAPIproject.classes;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Address {
     private String postcode;
     private String city;
@@ -14,6 +16,9 @@ public class Address {
         this.number = n;
         this.country = co;
     }
+
+    public Address() {};
+
 
     /**
      * Ustawia adress
@@ -67,4 +72,6 @@ public class Address {
     public String getStreet() {
         return street;
     }
+
+
 }

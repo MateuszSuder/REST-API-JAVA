@@ -1,13 +1,13 @@
 package RESTAPIproject.models;
 
+import RESTAPIproject.declarations.Specification;
+
 import java.util.ArrayList;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class ProductInput {
     public String name;
     public int price; // In pennies
     public String description;
-    public ConcurrentHashMap<String, ArrayList<String>> specification;
+    public ArrayList<Specification> specification;
     public int amount;
 }

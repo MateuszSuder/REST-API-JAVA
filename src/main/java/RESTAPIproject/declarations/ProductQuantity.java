@@ -1,4 +1,4 @@
-package RESTAPIproject.models;
+package RESTAPIproject.declarations;
 
 import RESTAPIproject.classes.Product;
 

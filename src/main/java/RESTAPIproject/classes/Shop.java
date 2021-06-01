@@ -1,6 +1,9 @@
 package RESTAPIproject.classes;
 
 import RESTAPIproject.declarations.Permission;
+import RESTAPIproject.declarations.Specification;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
 import java.io.*;
@@ -13,6 +16,8 @@ public class Shop {
     private ConcurrentHashMap<UUID, Company> companies;
     private ConcurrentHashMap<UUID, Product> products;
     private ConcurrentHashMap<UUID, Order> orders;
+
+    public Logger logger = LoggerFactory.getLogger(Shop.class);
 
     /**
      * Konstruktor
@@ -125,9 +130,11 @@ public class Shop {
         userWriter.append("Username");
         userWriter.append(",");
         userWriter.append("Permission");
+        userWriter.append(",");
+        userWriter.append("CompanyID");
         userWriter.append("\n");
 
-        FileWriter deliveryWriter = new FileWriter("deliveries.csv");
+        FileWriter deliveryWriter = new FileWriter("user_deliveries.csv");
         deliveryWriter.append("userID");
         deliveryWriter.append(",");
         deliveryWriter.append("Name");
@@ -135,7 +142,7 @@ public class Shop {
         deliveryWriter.append("LastName");
         deliveryWriter.append("\n");
 
-        FileWriter addressWriter = new FileWriter("addresses.csv");
+        FileWriter addressWriter = new FileWriter("user_addresses.csv");
         addressWriter.append("userID");
         addressWriter.append(",");
         addressWriter.append("Postcode");
@@ -155,6 +162,13 @@ public class Shop {
             userWriter.append(u.getUsername());
             userWriter.append(",");
             userWriter.append(u.getPermission().toString());
+            userWriter.append(",");
+            if(u.getCompany() != null) {
+                userWriter.append(u.getCompany().getID().toString());
+            } else {
+                userWriter.append("");
+            }
+
             userWriter.append("\n");
 
             if(u.getDeliverDetails() != null) {
@@ -193,97 +207,253 @@ public class Shop {
         deliveryWriter.close();
     }
 
-    public void saveCategoriesToFile() throws IOException {}
+    public void saveCategoriesToFile() throws IOException {
+        FileWriter categoryWriter = new FileWriter("category.csv");
+        FileWriter product_categoryWriter = new FileWriter("products_category.csv"); // Zapisuje w osobnym pliku - mniej problemow
+        categoryWriter.append("Name");
+        categoryWriter.append("\n");
 
-    public void saveCompaniesToFile() throws IOException {}
+        product_categoryWriter.append("ID");
+        product_categoryWriter.append(",");
+        product_categoryWriter.append("Category");
+        product_categoryWriter.append("\n");
 
-    public void saveProductsToFile() throws IOException {}
+        for(Category c : this.categories) {
+            categoryWriter.append(c.getName());
+            for(Product p : c.getProducts()) {
+                product_categoryWriter.append(p.getID().toString());
+                product_categoryWriter.append(",");
+                product_categoryWriter.append(c.getName());
+                product_categoryWriter.append("\n");
+            }
+        }
+
+        categoryWriter.flush();
+        categoryWriter.close();
+
+        product_categoryWriter.flush();
+        product_categoryWriter.close();
+    }
+
+    public void saveCompaniesToFile() throws IOException {
+        FileWriter companyWriter = new FileWriter("companies.csv");
+        companyWriter.append("ID");
+        companyWriter.append(",");
+        companyWriter.append("Name");
+        companyWriter.append("\n");
+
+        for(Company c : this.companies.values()) {
+            companyWriter.append(c.getID().toString());
+            companyWriter.append(",");
+            companyWriter.append(c.getName());
+            companyWriter.append("\n");
+        }
+
+        companyWriter.flush();
+        companyWriter.close();
+    }
+
+    public void saveProductsToFile() throws IOException {
+        FileWriter productWriter = new FileWriter("products.csv");
+        FileWriter specificationWriter = new FileWriter("specifications.csv");
+        productWriter.append("ID");
+        productWriter.append(",");
+        productWriter.append("Name");
+        productWriter.append(",");
+        productWriter.append("Description");
+        productWriter.append(",");
+        productWriter.append("Price");
+        productWriter.append(",");
+        productWriter.append("Amount");
+        productWriter.append("\n");
+
+        specificationWriter.append("ID");
+        specificationWriter.append(",");
+        specificationWriter.append("Key");
+        specificationWriter.append(",");
+        specificationWriter.append("Value");
+        specificationWriter.append("\n");
+
+        for(Product p : this.products.values()) {
+            productWriter.append(p.getID().toString());
+            productWriter.append(",");
+            productWriter.append(p.getName());
+            productWriter.append(",");
+            productWriter.append(p.getDescription());
+            productWriter.append(",");
+            productWriter.append(Integer.toString(p.getPrice()));
+            productWriter.append(",");
+            productWriter.append(Integer.toString(p.getAmount()));
+            productWriter.append("\n");
+
+            if(p.getSpecification() != null) {
+                for(Specification s : p.getSpecification()) {
+                    specificationWriter.append(p.getID().toString());
+                    specificationWriter.append(",");
+                    specificationWriter.append(s.key);
+                    specificationWriter.append(",");
+                    specificationWriter.append(s.val);
+                    specificationWriter.append("\n");
+                }
+            }
+        }
+
+        productWriter.flush();
+        productWriter.close();
+
+        specificationWriter.flush();
+        specificationWriter.close();
+    }
+
+    public void saveOrdersToFile() throws IOException {
+        FileWriter orderWriter = new FileWriter("orders.csv");
+        orderWriter.append("ID");
+        orderWriter.append(",");
+        orderWriter.append("Price");
+        orderWriter.append(",");
+        orderWriter.append("userID");
+        orderWriter.append("\n");
+
+        FileWriter orderStatusWriter = new FileWriter("orders_statuses.csv");
+        orderStatusWriter.append("orderID");
+        orderStatusWriter.append(",");
+        orderStatusWriter.append("Status");
+        orderStatusWriter.append("\n");
+
+        FileWriter orderProductsWriter = new FileWriter("orders_products.csv");
+        orderProductsWriter.append("orderID");
+        orderProductsWriter.append(",");
+        orderProductsWriter.append("productID");
+        orderProductsWriter.append(",");
+        orderProductsWriter.append("Quantity");
+        orderProductsWriter.append(",");
+        orderProductsWriter.append("\n");
+
+        FileWriter deliveryWriter = new FileWriter("order_deliveries.csv");
+        deliveryWriter.append("orderID");
+        deliveryWriter.append(",");
+        deliveryWriter.append("Name");
+        deliveryWriter.append(",");
+        deliveryWriter.append("LastName");
+        deliveryWriter.append("\n");
+
+        FileWriter addressWriter = new FileWriter("order_addresses.csv");
+        addressWriter.append("orderID");
+        addressWriter.append(",");
+        addressWriter.append("Postcode");
+        addressWriter.append(",");
+        addressWriter.append("City");
+        addressWriter.append(",");
+        addressWriter.append("Street");
+        addressWriter.append(",");
+        addressWriter.append("Number");
+        addressWriter.append(",");
+        addressWriter.append("Country");
+        addressWriter.append("\n");
+
+        for(Order o : this.orders.values()) {
+            orderWriter.append(o.getID().toString());
+            orderWriter.append(",");
+            orderWriter.append(Integer.toString(o.getPrice()));
+            orderWriter.append(",");
+            orderWriter.append(o.getUserID().toString());
+            orderWriter.append("\n");
+        }
+    }
 
     /**
-     * Metody pozyskujące zapisany stan sklepu z pliku CSV
+     * Metody pozyskujące zapisany stan sklepu z plików CSV
      */
+    public void getCompaniesFromFile() throws IOException {}
+
     public void getUsersFromFile() throws IOException {
-        BufferedReader userReader = new BufferedReader(new FileReader("users.csv"));
-        BufferedReader deliveryReader = new BufferedReader(new FileReader("deliveries.csv"));
-        BufferedReader addressReader = new BufferedReader(new FileReader("addresses.csv"));
+        try {
+            BufferedReader userReader = new BufferedReader(new FileReader("users.csv"));
+            BufferedReader deliveryReader = new BufferedReader(new FileReader("user_deliveries.csv"));
+            BufferedReader addressReader = new BufferedReader(new FileReader("user_addresses.csv"));
 
-        /**
-         * Users
-         **/
+            /**
+             * Users
+             **/
 
-        String row;
-        ArrayList<String[]> result = new ArrayList<>();
-        while ((row = userReader.readLine()) != null) {
-            result.add(row.split(","));
+            String row;
+            ArrayList<String[]> result = new ArrayList<>();
+            while ((row = userReader.readLine()) != null) {
+                result.add(row.split(","));
+            }
+
+            result.remove(0);
+            for(String[] d : result) {
+                UUID id = UUID.fromString(d[0]);
+                String username = d[1];
+                Permission permission = Permission.valueOf(d[2]);
+                User u = new User(username, permission, id);
+
+                users.putIfAbsent(id, u);
+            }
+
+            /**
+             * Deliveries
+             **/
+
+            row = "";
+            result = new ArrayList<>();
+            while ((row = deliveryReader.readLine()) != null) {
+                result.add(row.split(","));
+            }
+
+            result.remove(0);
+            for(String[] de : result) {
+                UUID id = UUID.fromString(de[0]);
+                String name = de[1];
+                String lastName = de[2];
+
+                Delivery d = new Delivery(name, lastName);
+
+                users.get(id).setDeliverDetails(d);
+            }
+
+            /**
+             * Addresses
+             **/
+
+            row = "";
+            result = new ArrayList<>();
+            while ((row = addressReader.readLine()) != null) {
+                result.add(row.split(","));
+            }
+
+            result.remove(0);
+            for(String[] de : result) {
+                UUID id = UUID.fromString(de[0]);
+                String p = de[1];
+                String c = de[2];
+                String s = de[3];
+                String n = de[4];
+                String co = de[5];
+
+                Address a = new Address(c, co, n, p, s);
+
+                users.get(id).getDeliverDetails().setAddress(a);
+            }
+            row = "";
+
+
+            addressReader.close();
+            deliveryReader.close();
+            userReader.close();
+        } catch(Exception e) {
+            e.printStackTrace();
+            return;
         }
 
-        result.remove(0);
-        for(String[] d : result) {
-            UUID id = UUID.fromString(d[0]);
-            String username = d[1];
-            Permission permission = Permission.valueOf(d[2]);
-
-            User u = new User(username, permission, id);
-            users.putIfAbsent(id, u);
-        }
-
-        /**
-         * Deliveries
-         **/
-
-        row = "";
-        result = new ArrayList<>();
-        while ((row = deliveryReader.readLine()) != null) {
-            result.add(row.split(","));
-        }
-
-        result.remove(0);
-        for(String[] de : result) {
-            UUID id = UUID.fromString(de[0]);
-            String name = de[1];
-            String lastName = de[2];
-
-            Delivery d = new Delivery(name, lastName);
-
-            users.get(id).setDeliverDetails(d);
-        }
-
-        /**
-         * Addresses
-         **/
-
-        row = "";
-        result = new ArrayList<>();
-        while ((row = addressReader.readLine()) != null) {
-            result.add(row.split(","));
-        }
-
-        result.remove(0);
-        for(String[] de : result) {
-            UUID id = UUID.fromString(de[0]);
-            String p = de[1];
-            String c = de[2];
-            String s = de[3];
-            String n = de[4];
-            String co = de[5];
-
-            Address a = new Address(c, co, n, p, s);
-
-            users.get(id).getDeliverDetails().setAddress(a);
-        }
-        row = "";
-
-
-        addressReader.close();
-        deliveryReader.close();
-        userReader.close();
     }
+
+    public void getProductsFromFile() throws IOException {}
 
     public void getCategoriesFromFile() throws IOException {}
 
-    public void getCompaniesFromFile() throws IOException {}
-
-    public void getProductsFromFile() throws IOException {}
+    public void getOrdersFromFile() throws IOException {}
 
     /**
      * Metoda inicjalizująca

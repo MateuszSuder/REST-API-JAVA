@@ -8,7 +8,7 @@ import RESTAPIproject.models.ErrorResponse;
 import RESTAPIproject.models.OrderInput;
 import RESTAPIproject.declarations.OrderProductInput;
 import RESTAPIproject.models.OrderStatusInput;
-import RESTAPIproject.models.ProductQuantity;
+import RESTAPIproject.declarations.ProductQuantity;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -89,7 +89,8 @@ public class OrderController extends RestApiProjectApplication {
 
             }
 
-            Order o = new Order(productsForOrder, u, orderInput.delivery);
+            Order o = new Order(productsForOrder, orderInput.userID, orderInput.delivery);
+            u.addOrder(o);
 
             System.gc();
             return ResponseEntity.status(HttpStatus.CREATED).body(o);
