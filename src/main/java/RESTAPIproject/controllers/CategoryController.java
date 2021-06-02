@@ -7,6 +7,7 @@ import RESTAPIproject.classes.Shop;
 import RESTAPIproject.declarations.CategoriesResult;
 import RESTAPIproject.models.CategoryInput;
 import RESTAPIproject.models.ErrorResponse;
+import RESTAPIproject.models.MoveProductInput;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -182,9 +183,9 @@ public class CategoryController extends RestApiProjectApplication {
         }
     }
 
-    @DeleteMapping("{name}/remove")
-    @Operation(summary = "Remove products from category",
-            description = "Delete each product from array from Request Body from category that was provided in Path Variable")
+    @PostMapping("{name}/move")
+    @Operation(summary = "Move products from category",
+            description = "Move product from category given in path to category given in request body - for null deletes product from category")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Category modified",
                     content = @Content),
@@ -195,12 +196,21 @@ public class CategoryController extends RestApiProjectApplication {
             @ApiResponse(responseCode = "500", description = "Internal Error",
                     content = @Content)
     })
-    public ResponseEntity deleteProductsFromCategory(@PathVariable String name, @RequestBody ArrayList<UUID> products) {
+    public ResponseEntity changeProductCategory(@PathVariable String name, @RequestBody MoveProductInput input) {
         try {
-            Category c = shop.findCategory(name);
-            for(UUID id : products) {
-                Product p = shop.getProduct(id);
-                c.removeProduct(p);
+            Category from = shop.findCategory(name);
+            Category to;
+
+            if(input.categoryName != null) {
+                to = shop.findCategory(input.categoryName);
+            } else {
+                to = null;
+            }
+
+            Product p = shop.getProduct(input.productID);
+            from.removeProduct(p);
+            if(to != null) {
+                to.addProducts(p);
             }
 
             return ResponseEntity.ok(null);
