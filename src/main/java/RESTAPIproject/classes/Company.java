@@ -11,6 +11,11 @@ public class Company {
         ID = UUID.randomUUID();
     }
 
+    public Company(UUID i, String n) {
+        ID = i;
+        name = n;
+    }
+
     /**
      * Zwraca nazwe firmy
      * @return String

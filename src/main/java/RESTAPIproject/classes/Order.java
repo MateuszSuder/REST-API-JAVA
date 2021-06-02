@@ -9,13 +9,13 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class Order {
-    private final ArrayList<ProductQuantity> items;
+    private ArrayList<ProductQuantity> items;
     private final int price; // In pennies
     private final UUID ID;
     private final UUID userID;
-    private final Delivery delivery;
+    private Delivery delivery;
 
-    private final ArrayList<OrderStatus> status;
+    private ArrayList<OrderStatus> status;
 
 
     public Order(ArrayList<ProductQuantity> i, UUID uid, Delivery d) throws Shop.CustomException {
@@ -42,22 +42,11 @@ public class Order {
         price = calcPrice(i);
     }
 
-    public Order(ArrayList<ProductQuantity> i, int price, UUID id, UUID userID, Delivery d, ArrayList<OrderStatus> s) throws Shop.CustomException {
-        for(ProductQuantity p : i) {
-            if(p.quantity <= 0) {
-                throw new Shop.CustomException(p.quantity + " is not correct quantity", HttpStatus.BAD_REQUEST);
-            }
-            if(p.quantity > p.product.getAmount()) {
-                throw new Shop.CustomException("Not enough products in store", HttpStatus.BAD_REQUEST);
-            }
-        }
-
-        items = i;
+    public Order(UUID id, int price, UUID userID) {
+        status = new ArrayList<OrderStatus>();
         this.price = price;
         ID = id;
         this.userID = userID;
-        delivery = d;
-        status = s;
     }
 
     /**
@@ -68,12 +57,20 @@ public class Order {
         return items;
     }
 
+    public void addItem(ProductQuantity p) {
+        this.items.add(p);
+    }
+
     /**
      * Zmienia status zamowienia
      * @param status status zamowienia
      */
     public void setStatus(Status status) {
         this.status.add(new OrderStatus(status));
+    }
+
+    public void setOrderStatus(OrderStatus status) {
+        this.status.add(status);
     }
 
     /**
@@ -108,6 +105,10 @@ public class Order {
 
     public Delivery getDelivery() {
         return delivery;
+    }
+
+    public void setDelivery(Delivery delivery) {
+        this.delivery = delivery;
     }
 
     public UUID getUserID() {

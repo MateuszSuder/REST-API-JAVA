@@ -12,6 +12,11 @@ public class OrderStatus {
         this.date = LocalDateTime.now();
     }
 
+    public OrderStatus(Status s, LocalDateTime d) {
+        this.status = s;
+        this.date = d;
+    }
+
     public LocalDateTime getDate() {
         return date;
     }

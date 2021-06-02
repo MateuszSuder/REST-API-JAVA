@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -92,6 +93,13 @@ public class OrderController extends RestApiProjectApplication {
             Order o = new Order(productsForOrder, orderInput.userID, orderInput.delivery);
             u.addOrder(o);
 
+            try {
+                shop.saveOrdersToFile();
+            } catch(IOException e) {
+                e.printStackTrace();
+                throw new Shop.CustomException("Error while saving file", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
             System.gc();
             return ResponseEntity.status(HttpStatus.CREATED).body(o);
         } catch(Shop.CustomException e) {
@@ -123,6 +131,13 @@ public class OrderController extends RestApiProjectApplication {
                 }
             }
             o.setStatus(statusInput.status);
+
+            try {
+                shop.saveOrdersToFile();
+            } catch(IOException e) {
+                e.printStackTrace();
+                throw new Shop.CustomException("Error while saving file", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
 
             System.gc();
 

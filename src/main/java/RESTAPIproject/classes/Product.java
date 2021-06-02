@@ -23,6 +23,12 @@ public class Product {
         ID = UUID.randomUUID();
     }
 
+    public Product(UUID id, String name) {
+        ID = id;
+        this.name = name;
+        specification = new ArrayList<>();
+    }
+
     /**
      * Zwraca cene produktu w groszach
      * @return int
@@ -109,19 +115,9 @@ public class Product {
         this.specification = specification;
     }
 
-    /**
-     * Dodaje nowa kategorie podana w argumencie
-     * @return void
-     */
-    public void addNewCategory(String categoryName) {}
-
-    /**
-     * Dodaje nowe pole do kategorii
-     * @param properties pola do kategorii
-     * @param categoryName nazwa kategorii
-     * @return void
-     */
-    public void addPropertyToCategory(ArrayList properties, String categoryName) {}
+    public void addToSpec(Specification s) {
+        this.specification.add(s);
+    }
 
     public UUID getID() {
         return ID;
