@@ -9,12 +9,14 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
+	<packaging>jar</packaging>
 	<artifactId>REST-API-project</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>REST-API-project</name>
 	<description>REST API project for electronic shop</description>
 	<properties>
 		<java.version>1.8</java.version>
+		<start-class>RESTAPIproject.RestApiProjectApplication</start-class>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -58,6 +60,17 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<fork>true</fork>
+					<mainClass>${start-class}</mainClass>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.springdoc</groupId>
