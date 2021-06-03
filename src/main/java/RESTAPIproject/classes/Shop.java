@@ -500,9 +500,11 @@ public class Shop {
                 Permission permission = Permission.valueOf(d[2]);
 
                 User u = new User(username, permission, id);
-                Company c = getCompany(UUID.fromString(d[3]));
 
-                u.setCompany(c);
+                if(d[3] != null) {
+                    Company c = getCompany(UUID.fromString(d[3]));
+                    u.setCompany(c);
+                }
 
                 users.putIfAbsent(id, u);
 

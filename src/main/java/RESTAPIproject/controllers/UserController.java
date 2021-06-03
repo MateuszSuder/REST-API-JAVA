@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -45,8 +46,8 @@ public class UserController extends RestApiProjectApplication {
             @ApiResponse(responseCode = "500", description = "Internal Error",
                     content = @Content)
     })
-    public ConcurrentHashMap<UUID, User> getUsers() {
-        return shop.getUsers();
+    public Collection<User> getUsers() {
+        return shop.getUsers().values();
     }
 
     @GetMapping("{id}")

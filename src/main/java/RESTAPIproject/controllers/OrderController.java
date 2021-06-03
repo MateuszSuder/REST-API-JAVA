@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -39,8 +40,8 @@ public class OrderController extends RestApiProjectApplication {
             @ApiResponse(responseCode = "500", description = "Internal Error",
                     content = @Content)
     })
-    public ConcurrentHashMap<UUID, Order> getOrders() {
-        return shop.getOrders();
+    public Collection<Order> getOrders() {
+        return shop.getOrders().values();
     }
 
     @GetMapping(value = "{id}")

@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -36,8 +37,8 @@ public class ProductController extends RestApiProjectApplication  {
             @ApiResponse(responseCode = "500", description = "Internal Error",
                     content = @Content)
     })
-    public ResponseEntity<ConcurrentHashMap<UUID, Product>> getProducts() {
-        return ResponseEntity.status(HttpStatus.OK).body(shop.getProducts());
+    public ResponseEntity<Collection<Product>> getProducts() {
+        return ResponseEntity.status(HttpStatus.OK).body(shop.getProducts().values());
     }
 
     @GetMapping("{id}")
