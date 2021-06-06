@@ -3,8 +3,12 @@ package RESTAPIproject.controllers;
 import RESTAPIproject.RestApiProjectApplication;
 import RESTAPIproject.classes.Product;
 import RESTAPIproject.classes.Shop;
+import RESTAPIproject.declarations.CompaniesInfoResult;
+import RESTAPIproject.declarations.ProductMinifiedResult;
+import RESTAPIproject.declarations.ProductsInfoResult;
 import RESTAPIproject.models.ErrorResponse;
 import RESTAPIproject.models.ProductInput;
+import RESTAPIproject.models.ProductsInfoInput;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -17,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,6 +44,63 @@ public class ProductController extends RestApiProjectApplication  {
     })
     public ResponseEntity<Collection<Product>> getProducts() {
         return ResponseEntity.status(HttpStatus.OK).body(shop.getProducts().values());
+    }
+
+    @PostMapping("info")
+    @Operation(summary = "Get info about products")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Query successful", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ProductsInfoResult.class))
+            }),
+            @ApiResponse(responseCode = "500", description = "Internal Error",
+                    content = @Content)
+    })
+    public ProductsInfoResult getProductsInfo(@RequestBody ProductsInfoInput input) {
+        int q = 0;
+        if(input.quantityLowerThan > 0) {
+            q = input.quantityLowerThan;
+        }
+        ProductsInfoResult result = new ProductsInfoResult();
+        result.numberOfProducts = shop.getProducts().values().size();
+
+        int lowAmount = 0;
+        for(Product p : shop.getProducts().values()) {
+            if(p.getAmount() <= q) {
+                lowAmount++;
+            }
+        }
+
+        result.productsWithLowAmount = lowAmount;
+
+        return result;
+    }
+
+    @GetMapping(value = "v2")
+    @Operation(summary = "Get all products minified",
+            description = "Return all products minified")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Query successful", content = {
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProductMinifiedResult.class))
+            }),
+            @ApiResponse(responseCode = "500", description = "Internal Error",
+                    content = @Content)
+    })
+    public ArrayList<ProductMinifiedResult> getProductsMinified() {
+        ArrayList result = new ArrayList<ProductMinifiedResult>();
+
+        for(Product p : shop.getProducts().values()) {
+            ProductMinifiedResult temp = new ProductMinifiedResult();
+
+            temp.id = p.getID();
+            temp.name = p.getName();
+            temp.amount = p.getAmount();
+            temp.price = p.getPrice();
+
+            result.add(temp);
+        }
+
+        return result;
     }
 
     @GetMapping("{id}")

@@ -4,6 +4,7 @@ import RESTAPIproject.RestApiProjectApplication;
 import RESTAPIproject.classes.Company;
 import RESTAPIproject.classes.Shop;
 import RESTAPIproject.classes.User;
+import RESTAPIproject.declarations.CompaniesInfoResult;
 import RESTAPIproject.models.CompanyInput;
 import RESTAPIproject.models.ErrorResponse;
 import io.swagger.annotations.Api;
@@ -41,6 +42,21 @@ public class CompanyController extends RestApiProjectApplication {
     })
     public Collection<Company> getCompanies() {
         return shop.getCompanies().values();
+    }
+
+    @GetMapping("info")
+    @Operation(summary = "Get info about existing companies")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Query successful", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = CompaniesInfoResult.class))
+            }),
+            @ApiResponse(responseCode = "500", description = "Internal Error",
+                    content = @Content)
+    })
+    public CompaniesInfoResult getCompaniesInfo() {
+        CompaniesInfoResult result = new CompaniesInfoResult();
+        result.numberOfCompanies = shop.getCompanies().values().size();
+        return result;
     }
 
     @GetMapping("{id}")

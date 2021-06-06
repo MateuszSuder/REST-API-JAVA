@@ -501,7 +501,7 @@ public class Shop {
 
                 User u = new User(username, permission, id);
 
-                if(d[3] != null) {
+                if(d.length > 3 && d[3] != null) {
                     Company c = getCompany(UUID.fromString(d[3]));
                     u.setCompany(c);
                 }

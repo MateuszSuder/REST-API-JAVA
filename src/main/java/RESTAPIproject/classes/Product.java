@@ -5,7 +5,6 @@ import RESTAPIproject.declarations.Specification;
 
 import java.util.ArrayList;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class Product {
     private String name;
