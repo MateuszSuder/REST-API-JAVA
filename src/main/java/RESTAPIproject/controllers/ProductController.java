@@ -1,10 +1,12 @@
 package RESTAPIproject.controllers;
 
 import RESTAPIproject.RestApiProjectApplication;
+import RESTAPIproject.classes.Category;
 import RESTAPIproject.classes.Product;
 import RESTAPIproject.classes.Shop;
 import RESTAPIproject.declarations.CompaniesInfoResult;
 import RESTAPIproject.declarations.ProductMinifiedResult;
+import RESTAPIproject.declarations.ProductResult;
 import RESTAPIproject.declarations.ProductsInfoResult;
 import RESTAPIproject.models.ErrorResponse;
 import RESTAPIproject.models.ProductInput;
@@ -103,13 +105,18 @@ public class ProductController extends RestApiProjectApplication  {
         return result;
     }
 
+    @GetMapping("fix")
+    public ProductResult fix() {
+        return new ProductResult();
+    }
+
     @GetMapping("{id}")
     @Operation(summary = "Get product",
             description = "Get product by UUID specified in path variable")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Query successful", content = {
                     @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Product.class))
+                            schema = @Schema(implementation = ProductResult.class))
             }),
             @ApiResponse(responseCode = "404", description = "Product not found", content = {
                     @Content(mediaType = "application/json")
@@ -121,7 +128,17 @@ public class ProductController extends RestApiProjectApplication  {
         ConcurrentHashMap<UUID, Product> products = shop.getProducts();
 
         if(products.containsKey(id)) {
-            return ResponseEntity.status(HttpStatus.OK).body(products.get(id));
+            ProductResult res = new ProductResult();
+            Product p = products.get(id);
+            res.product = p;
+            res.category = null;
+            for(Category c : shop.getCategories()) {
+                if(c.getProducts().contains(p)) {
+                    res.category = c.getName();
+                    break;
+                }
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(res);
         } else {
             ErrorResponse er = new ErrorResponse("UUID " + id + " not found", HttpStatus.NOT_FOUND.value());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(er);
