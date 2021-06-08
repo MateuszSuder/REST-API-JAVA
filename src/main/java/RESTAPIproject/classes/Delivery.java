@@ -6,6 +6,10 @@ public class Delivery {
     private String lastName;
     private Address address;
 
+    public Delivery() {
+
+    }
+
     public Delivery(String n, String l) {
         this.name = n;
         this.lastName = l;
