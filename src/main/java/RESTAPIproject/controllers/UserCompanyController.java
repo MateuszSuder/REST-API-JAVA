@@ -61,10 +61,10 @@ public class UserCompanyController extends RestApiProjectApplication {
             @ApiResponse(responseCode = "500", description = "Internal Error",
                     content = @Content)
     })
-    public ResponseEntity changeUserCompany(@PathVariable UUID id, @PathVariable UUID companyID) {
+    public ResponseEntity changeUserCompany(@PathVariable UUID id, @PathVariable UUID cid) {
         try {
             User u = shop.getUser(id);
-            Company c = shop.getCompany(companyID);
+            Company c = shop.getCompany(cid);
 
             u.setCompany(c);
 

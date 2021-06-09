@@ -524,10 +524,12 @@ public class Shop {
             result.remove(0);
             for(String[] de : result) {
                 UUID id = UUID.fromString(de[0]);
-                String name = de[1];
-                String lastName = de[2];
+                Delivery d = new Delivery();
 
-                Delivery d = new Delivery(name, lastName);
+                if(de.length > 1)
+                d.setName(de[1]);
+
+                if(de.length > 2) d.setLastName(de[2]);
 
                 users.get(id).setDeliverDetails(d);
             }

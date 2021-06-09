@@ -77,7 +77,7 @@ public class ProductController extends RestApiProjectApplication  {
         return result;
     }
 
-    @GetMapping(value = "v2")
+    @GetMapping("v2/products")
     @Operation(summary = "Get all products minified",
             description = "Return all products minified")
     @ApiResponses(value = {
@@ -101,7 +101,6 @@ public class ProductController extends RestApiProjectApplication  {
 
             result.add(temp);
         }
-
         return result;
     }
 
