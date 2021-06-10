@@ -113,7 +113,7 @@ public class Shop {
      */
     public Category findCategory(String catName) throws CustomException {
         for(Category c : categories) {
-            if(c.getName().equals(catName)) {
+            if(c.getName().equalsIgnoreCase(catName)) {
                 return c;
             }
         }
@@ -602,6 +602,8 @@ public class Shop {
                 p.setDescription(des);
                 p.setPrice(price);
                 p.setAmount(amount);
+
+                products.putIfAbsent(id, p);
 
                 i++;
             }
