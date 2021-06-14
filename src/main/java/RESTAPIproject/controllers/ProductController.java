@@ -34,7 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Api(tags = "Product")
 public class ProductController extends RestApiProjectApplication  {
 
-    @GetMapping("v2")
+    @GetMapping("v2/products")
     @Operation(summary = "Get all products minified",
             description = "Return all products minified")
     @ApiResponses(value = {
