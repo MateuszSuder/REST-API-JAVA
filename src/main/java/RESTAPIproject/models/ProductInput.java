@@ -10,4 +10,5 @@ public class ProductInput {
     public String description;
     public ArrayList<Specification> specification;
     public int amount;
+    public String category;
 }

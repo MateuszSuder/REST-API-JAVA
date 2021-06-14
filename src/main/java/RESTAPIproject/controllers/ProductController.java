@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -32,6 +33,33 @@ import java.util.concurrent.ConcurrentHashMap;
 @SpringBootApplication
 @Api(tags = "Product")
 public class ProductController extends RestApiProjectApplication  {
+
+    @GetMapping("v2")
+    @Operation(summary = "Get all products minified",
+            description = "Return all products minified")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Query successful", content = {
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProductMinifiedResult.class))
+            }),
+            @ApiResponse(responseCode = "500", description = "Internal Error",
+                    content = @Content)
+    })
+    public ArrayList<ProductMinifiedResult> getProductsMinified() {
+        ArrayList result = new ArrayList<ProductMinifiedResult>();
+
+        for(Product p : shop.getProducts().values()) {
+            ProductMinifiedResult temp = new ProductMinifiedResult();
+
+            temp.id = p.getID();
+            temp.name = p.getName();
+            temp.amount = p.getAmount();
+            temp.price = p.getPrice();
+
+            result.add(temp);
+        }
+        return result;
+    }
 
     @GetMapping(value = "")
     @Operation(summary = "Get all products",
@@ -44,7 +72,21 @@ public class ProductController extends RestApiProjectApplication  {
             @ApiResponse(responseCode = "500", description = "Internal Error",
                     content = @Content)
     })
-    public ResponseEntity<Collection<Product>> getProducts() {
+    public ResponseEntity<Collection<Product>> getProducts(@RequestParam(required = false) Integer limit) {
+
+        if(limit != null) {
+            int l = 0;
+            Collection<Product> res = new ArrayList<>();
+
+            for(Product p : shop.getProducts().values()) {
+                if(l == limit) break;
+
+                res.add(p);
+                l++;
+            }
+
+            return ResponseEntity.status(HttpStatus.OK).body(res);
+        }
         return ResponseEntity.status(HttpStatus.OK).body(shop.getProducts().values());
     }
 
@@ -74,33 +116,6 @@ public class ProductController extends RestApiProjectApplication  {
 
         result.productsWithLowAmount = lowAmount;
 
-        return result;
-    }
-
-    @GetMapping("v2/products")
-    @Operation(summary = "Get all products minified",
-            description = "Return all products minified")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Query successful", content = {
-                    @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ProductMinifiedResult.class))
-            }),
-            @ApiResponse(responseCode = "500", description = "Internal Error",
-                    content = @Content)
-    })
-    public ArrayList<ProductMinifiedResult> getProductsMinified() {
-        ArrayList result = new ArrayList<ProductMinifiedResult>();
-
-        for(Product p : shop.getProducts().values()) {
-            ProductMinifiedResult temp = new ProductMinifiedResult();
-
-            temp.id = p.getID();
-            temp.name = p.getName();
-            temp.amount = p.getAmount();
-            temp.price = p.getPrice();
-
-            result.add(temp);
-        }
         return result;
     }
 
@@ -185,6 +200,7 @@ public class ProductController extends RestApiProjectApplication  {
 
             try {
                 shop.saveProductsToFile();
+                shop.saveCategoriesToFile();
             } catch(IOException e) {
                 e.printStackTrace();
                 throw new Shop.CustomException("Error while saving file", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -219,8 +235,26 @@ public class ProductController extends RestApiProjectApplication  {
             if(input.name != null) {
                 if(input.name.length() < 3) {
                     throw new Shop.CustomException("Product name has to be at least 3 characters", HttpStatus.BAD_REQUEST);
+                } else {
+                  p.setName(input.name);
                 }
+            }
 
+            if(input.category != null) {
+                Category ca = null;
+                for(Category c : shop.getCategories()) {
+                    if(c.getName().equals(input.category)) {
+                        ca = c;
+                    }
+                    if(c.getProducts().contains(p)) {
+                        c.removeProduct(p);
+                        if(ca != null)
+                        break;
+                    }
+                }
+                if(ca != null) {
+                    ca.addProducts(p);
+                }
             }
 
             if(input.amount > 0) {
@@ -243,6 +277,7 @@ public class ProductController extends RestApiProjectApplication  {
 
             try {
                 shop.saveProductsToFile();
+                shop.saveCategoriesToFile();
             } catch(IOException e) {
                 e.printStackTrace();
                 throw new Shop.CustomException("Error while saving file", HttpStatus.INTERNAL_SERVER_ERROR);
