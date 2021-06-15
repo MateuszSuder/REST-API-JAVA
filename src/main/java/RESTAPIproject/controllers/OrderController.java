@@ -83,7 +83,7 @@ public class OrderController extends RestApiProjectApplication {
         result.paymentDone = 0;
 
         for(Order o : shop.getOrders().values()) {
-            Status s = o.getStatus().get(o.getStatus().size()).getStatus();
+            Status s = o.getStatus().get(o.getStatus().size() - 1).getStatus();
 
             if(s.equals(Status.Ordered)) {
                 result.waitingForPayment++;
@@ -152,6 +152,8 @@ public class OrderController extends RestApiProjectApplication {
 
             Order o = new Order(productsForOrder, orderInput.userID, orderInput.delivery);
             u.addOrder(o);
+
+            shop.getOrders().putIfAbsent(o.getID(), o);
 
             try {
                 shop.saveOrdersToFile();

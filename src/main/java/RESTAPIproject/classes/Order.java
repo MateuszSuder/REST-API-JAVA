@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class Order {
-    private ArrayList<ProductQuantity> items;
+    private ArrayList<ProductQuantity> items = new ArrayList<>();
     private final int price; // In pennies
     private final UUID ID;
     private final UUID userID;

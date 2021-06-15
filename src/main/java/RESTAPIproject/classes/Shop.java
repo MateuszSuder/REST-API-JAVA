@@ -736,6 +736,8 @@ public class Shop {
                 result.add(row.split(","));
             }
 
+            result.remove(0);
+
             for(String[] d : result) {
                 UUID orderid = UUID.fromString(d[0]);
                 Status status = Status.valueOf(d[1]);
@@ -755,6 +757,8 @@ public class Shop {
             while ((row = order_productsReader.readLine()) != null) {
                 result.add(row.split(","));
             }
+
+            result.remove(0);
 
             for(String[] d : result) {
                 UUID orderid = UUID.fromString(d[0]);
@@ -779,6 +783,8 @@ public class Shop {
                 result.add(row.split(","));
             }
 
+            result.remove(0);
+
             for(String[] d : result) {
                 UUID orderid = UUID.fromString(d[0]);
                 String name = d[1];
@@ -799,6 +805,8 @@ public class Shop {
             while ((row = order_addressesReader.readLine()) != null) {
                 result.add(row.split(","));
             }
+
+            result.remove(0);
 
             for(String[] d : result) {
                 UUID orderid = UUID.fromString(d[0]);
