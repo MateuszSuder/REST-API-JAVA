@@ -3,6 +3,8 @@ package RESTAPIproject.controllers;
 import RESTAPIproject.RestApiProjectApplication;
 import RESTAPIproject.classes.Shop;
 import RESTAPIproject.classes.User;
+import RESTAPIproject.declarations.UserMinifiedResult;
+import RESTAPIproject.declarations.UsersInfoResult;
 import RESTAPIproject.models.ErrorResponse;
 import RESTAPIproject.models.UserInput;
 import RESTAPIproject.models.UserMutationInput;
@@ -22,8 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -45,8 +46,51 @@ public class UserController extends RestApiProjectApplication {
             @ApiResponse(responseCode = "500", description = "Internal Error",
                     content = @Content)
     })
-    public ConcurrentHashMap<UUID, User> getUsers() {
-        return shop.getUsers();
+    public Collection<User> getUsers() {
+        return shop.getUsers().values();
+    }
+
+    @GetMapping("info")
+    @Operation(summary = "Get information about users")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Query successful", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = UsersInfoResult.class))
+            }),
+            @ApiResponse(responseCode = "500", description = "Internal Error",
+                    content = @Content)
+    })
+    public UsersInfoResult getUsersInfo() {
+        Collection<User> us = shop.getUsers().values();
+        int numberOfUsers = us.size();
+        UsersInfoResult res = new UsersInfoResult();
+        res.numberOfUsers = numberOfUsers;
+        return res;
+    }
+
+    @GetMapping("v2")
+    @Operation(summary = "Get minified information about users")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Query successful", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = UserMinifiedResult.class))
+            }),
+            @ApiResponse(responseCode = "500", description = "Internal Error",
+                    content = @Content)
+    })
+    public ArrayList<UserMinifiedResult> getUsersMinified() {
+        ArrayList<UserMinifiedResult> res = new ArrayList<UserMinifiedResult>();
+
+        for(User u : shop.getUsers().values()) {
+            UserMinifiedResult temp = new UserMinifiedResult();
+            temp.id = u.getID();
+            temp.username = u.getUsername();
+            if(u.getCompany() != null) {
+                temp.companyName = u.getCompany().getName();
+            }
+            temp.permission = u.getPermission();
+            res.add(temp);
+        }
+
+        return res;
     }
 
     @GetMapping("{id}")

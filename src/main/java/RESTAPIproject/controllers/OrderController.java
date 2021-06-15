@@ -2,13 +2,11 @@ package RESTAPIproject.controllers;
 
 import RESTAPIproject.RestApiProjectApplication;
 import RESTAPIproject.classes.*;
-import RESTAPIproject.declarations.OrderStatus;
-import RESTAPIproject.declarations.Status;
+import RESTAPIproject.declarations.*;
 import RESTAPIproject.models.ErrorResponse;
 import RESTAPIproject.models.OrderInput;
-import RESTAPIproject.declarations.OrderProductInput;
 import RESTAPIproject.models.OrderStatusInput;
-import RESTAPIproject.declarations.ProductQuantity;
+import RESTAPIproject.models.ProductsInfoInput;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -22,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -39,9 +38,70 @@ public class OrderController extends RestApiProjectApplication {
             @ApiResponse(responseCode = "500", description = "Internal Error",
                     content = @Content)
     })
-    public ConcurrentHashMap<UUID, Order> getOrders() {
-        return shop.getOrders();
+    public Collection<Order> getOrders() {
+        return shop.getOrders().values();
     }
+
+    @GetMapping(value = "v2")
+    @Operation(summary = "Get all orders minified")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Query successful", content = @Content
+            ),
+            @ApiResponse(responseCode = "500", description = "Internal Error",
+                    content = @Content)
+    })
+    public ArrayList<OrderMinifiedResult> getOrdersMinified() {
+        ArrayList<OrderMinifiedResult> result = new ArrayList<OrderMinifiedResult>();
+
+        for(Order o : shop.getOrders().values()) {
+            OrderMinifiedResult r = new OrderMinifiedResult();
+            r.id = o.getID();
+            r.price = o.getPrice();
+            r.lastStatus = o.getStatus().get(o.getStatus().size() - 1).getStatus();
+
+            result.add(r);
+        }
+
+        return result;
+    }
+
+    @GetMapping("info")
+    @Operation(summary = "Get info about orders")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Query successful", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = OrdersInfoResult.class))
+            }),
+            @ApiResponse(responseCode = "500", description = "Internal Error",
+                    content = @Content)
+    })
+    public OrdersInfoResult getOrdersInfo() {
+        OrdersInfoResult result = new OrdersInfoResult();
+
+        result.delivered = 0;
+        result.waitingForPayment = 0;
+        result.shipped = 0;
+        result.paymentDone = 0;
+
+        for(Order o : shop.getOrders().values()) {
+            Status s = o.getStatus().get(o.getStatus().size() - 1).getStatus();
+
+            if(s.equals(Status.Ordered)) {
+                result.waitingForPayment++;
+            }
+            if(s.equals(Status.Delivered)) {
+                result.delivered++;
+            }
+            if(s.equals(Status.PaymentDone)) {
+                result.paymentDone++;
+            }
+            if(s.equals(Status.Shipped)) {
+                result.shipped++;
+            }
+        }
+
+        return result;
+    }
+
 
     @GetMapping(value = "{id}")
     @Operation(summary = "Get order with specific id")
@@ -92,6 +152,8 @@ public class OrderController extends RestApiProjectApplication {
 
             Order o = new Order(productsForOrder, orderInput.userID, orderInput.delivery);
             u.addOrder(o);
+
+            shop.getOrders().putIfAbsent(o.getID(), o);
 
             try {
                 shop.saveOrdersToFile();

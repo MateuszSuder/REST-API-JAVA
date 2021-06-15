@@ -26,6 +26,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @RequestMapping("/category")
+@CrossOrigin(origins = "http://localhost:3000")
 @SpringBootApplication
 @Api(tags = "Category")
 public class CategoryController extends RestApiProjectApplication {

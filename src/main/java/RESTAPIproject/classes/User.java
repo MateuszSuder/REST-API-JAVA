@@ -8,7 +8,7 @@ import java.util.UUID;
 public class User implements java.io.Serializable {
     private Delivery deliverDetails;
     private Company company;
-    private ArrayList<Order> orders;
+    private ArrayList<Order> orders = new ArrayList<>();
 
     private String username;
     private Permission permission;

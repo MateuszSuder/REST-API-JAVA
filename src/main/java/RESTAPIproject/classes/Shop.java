@@ -113,7 +113,7 @@ public class Shop {
      */
     public Category findCategory(String catName) throws CustomException {
         for(Category c : categories) {
-            if(c.getName().equals(catName)) {
+            if(c.getName().equalsIgnoreCase(catName)) {
                 return c;
             }
         }
@@ -500,9 +500,11 @@ public class Shop {
                 Permission permission = Permission.valueOf(d[2]);
 
                 User u = new User(username, permission, id);
-                Company c = getCompany(UUID.fromString(d[3]));
 
-                u.setCompany(c);
+                if(d.length > 3 && d[3] != null) {
+                    Company c = getCompany(UUID.fromString(d[3]));
+                    u.setCompany(c);
+                }
 
                 users.putIfAbsent(id, u);
 
@@ -522,10 +524,12 @@ public class Shop {
             result.remove(0);
             for(String[] de : result) {
                 UUID id = UUID.fromString(de[0]);
-                String name = de[1];
-                String lastName = de[2];
+                Delivery d = new Delivery();
 
-                Delivery d = new Delivery(name, lastName);
+                if(de.length > 1)
+                d.setName(de[1]);
+
+                if(de.length > 2) d.setLastName(de[2]);
 
                 users.get(id).setDeliverDetails(d);
             }
@@ -598,6 +602,8 @@ public class Shop {
                 p.setDescription(des);
                 p.setPrice(price);
                 p.setAmount(amount);
+
+                products.putIfAbsent(id, p);
 
                 i++;
             }
@@ -730,6 +736,8 @@ public class Shop {
                 result.add(row.split(","));
             }
 
+            result.remove(0);
+
             for(String[] d : result) {
                 UUID orderid = UUID.fromString(d[0]);
                 Status status = Status.valueOf(d[1]);
@@ -749,6 +757,8 @@ public class Shop {
             while ((row = order_productsReader.readLine()) != null) {
                 result.add(row.split(","));
             }
+
+            result.remove(0);
 
             for(String[] d : result) {
                 UUID orderid = UUID.fromString(d[0]);
@@ -773,6 +783,8 @@ public class Shop {
                 result.add(row.split(","));
             }
 
+            result.remove(0);
+
             for(String[] d : result) {
                 UUID orderid = UUID.fromString(d[0]);
                 String name = d[1];
@@ -793,6 +805,8 @@ public class Shop {
             while ((row = order_addressesReader.readLine()) != null) {
                 result.add(row.split(","));
             }
+
+            result.remove(0);
 
             for(String[] d : result) {
                 UUID orderid = UUID.fromString(d[0]);
