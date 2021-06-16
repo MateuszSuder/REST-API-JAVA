@@ -243,6 +243,7 @@ public class Shop {
 
         for(Category c : this.categories) {
             categoryWriter.append(c.getName());
+            categoryWriter.append("\n");
             for(Product p : c.getProducts()) {
                 product_categoryWriter.append(p.getID().toString());
                 product_categoryWriter.append(",");
