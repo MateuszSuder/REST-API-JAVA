@@ -8,7 +8,16 @@ public class Address {
     private String street;
     private String number; // if ex 21/4
     private String country;
-    
+
+
+    /**
+     * Konstruktor
+     * @param ci Miasto
+     * @param co Państwo
+     * @param n Numer domu
+     * @param p Kod pocztowy
+     * @param s Ulica
+     */
     public Address(String ci, String co, String n, String p, String s) {
         this.postcode = p;
         this.city = ci;
@@ -17,6 +26,10 @@ public class Address {
         this.country = co;
     }
 
+
+    /**
+     * Standardowy konstruktor bez parametrów, potrzebny podczasz wczytywania adresów z pliku
+     */
     public Address() {};
 
 

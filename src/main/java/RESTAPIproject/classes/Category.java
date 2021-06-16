@@ -7,6 +7,10 @@ public class Category {
 
     private String name;
 
+    /**
+     * Konstruktor
+     * @param categoryName nazwa kategorii
+     */
     public Category(String categoryName) {
         name = categoryName;
 

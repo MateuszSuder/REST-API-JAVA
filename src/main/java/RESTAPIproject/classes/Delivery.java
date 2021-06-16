@@ -6,15 +6,29 @@ public class Delivery {
     private String lastName;
     private Address address;
 
+    /**
+     * Pusty konstruktor potrzebny podczas wczytywania danych dostawy z pliku
+     */
     public Delivery() {
 
     }
 
+    /**
+     * Konstruktor
+     * @param n Imię
+     * @param l Nazwisko
+     */
     public Delivery(String n, String l) {
         this.name = n;
         this.lastName = l;
     }
 
+    /**
+     * Konstruktor
+     * @param n Imię
+     * @param l Naziwsko
+     * @param a Adres
+     */
     public Delivery(String n, String l, Address a) {
         this.name = n;
         this.lastName = l;

@@ -6,11 +6,20 @@ public class Company {
     private String name;
     private UUID ID;
 
+    /**
+     * Konstruktor
+     * @param n nazwa firmy
+     */
     public Company(String n) {
         name = n;
         ID = UUID.randomUUID();
     }
 
+    /**
+     * Konstruktor potrzebny podczas wczytywania firm z pliku
+     * @param i ID firmy
+     * @param n Nazwa firmy
+     */
     public Company(UUID i, String n) {
         ID = i;
         name = n;
@@ -33,6 +42,10 @@ public class Company {
         this.name = name;
     }
 
+    /**
+     * Zwraca id firmy
+     * @return company's id
+     */
     public UUID getID() {
         return ID;
     }
