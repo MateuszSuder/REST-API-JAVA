@@ -37,7 +37,7 @@ public class UserOrderController extends RestApiProjectApplication {
             shop.getUser(userid);
             ArrayList<Order> os = new ArrayList<Order>();
             for(Order o : shop.getOrders().values()) {
-                if(o.getUserID() == userid) {
+                if(o.getUserID().equals(userid)) {
                     os.add(o);
                 }
             }

@@ -48,6 +48,12 @@ public class Shop {
         return users;
     }
 
+    /**
+     * Zwraca użytkownika
+     * @param id ID szukanego użytkownika
+     * @return szukanego użytkownika
+     * @throws CustomException
+     */
     public User getUser(UUID id) throws CustomException {
         if(users.containsKey(id)) {
             return users.get(id);
@@ -63,6 +69,12 @@ public class Shop {
         return products;
     }
 
+    /**
+     * Zwraca Produkt
+     * @param id ID szukanego produktu
+     * @return szukany produkt
+     * @throws CustomException
+     */
     public Product getProduct(UUID id) throws CustomException {
         if(products.containsKey(id)) {
             return products.get(id);
@@ -99,6 +111,12 @@ public class Shop {
         return companies;
     }
 
+    /**
+     * Zwraca firme
+     * @param id ID szukanej firmy
+     * @return Firma
+     * @throws CustomException
+     */
     public Company getCompany(UUID id) throws CustomException {
         if(companies.containsKey(id)) {
             return companies.get(id);
@@ -225,6 +243,7 @@ public class Shop {
 
         for(Category c : this.categories) {
             categoryWriter.append(c.getName());
+            categoryWriter.append("\n");
             for(Product p : c.getProducts()) {
                 product_categoryWriter.append(p.getID().toString());
                 product_categoryWriter.append(",");

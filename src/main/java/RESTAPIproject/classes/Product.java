@@ -14,6 +14,10 @@ public class Product {
     private int amount;
     private UUID ID;
 
+    /**
+     * Konstruktor
+     * @param name nazwa produktu
+     */
     public Product(String name) {
         this.name = name;
 
@@ -22,6 +26,11 @@ public class Product {
         ID = UUID.randomUUID();
     }
 
+    /**
+     * Konstruktor potrzebny podczas wczytywania z pliku
+     * @param id id produktu
+     * @param name nazwa produktu
+     */
     public Product(UUID id, String name) {
         ID = id;
         this.name = name;
@@ -114,10 +123,18 @@ public class Product {
         this.specification = specification;
     }
 
+    /**
+     * Dodaje specyfikacje do listy specyfikacji
+     * @param s specyfikacja do dodania
+     */
     public void addToSpec(Specification s) {
         this.specification.add(s);
     }
 
+    /**
+     * Zwraca ID produktu
+     * @return ID produktu
+     */
     public UUID getID() {
         return ID;
     }

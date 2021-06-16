@@ -1,0 +1,7 @@
+ID,Username,Permission,CompanyID
+491bedac-cc73-460d-a720-521c7d455dd0,Użytkownik 2,user,
+9ece370c-b8ae-4df7-baa3-4bc92d633f82,Użytkownik 4,user,
+fd2ab826-f6ab-4e5e-b2b2-6d33d69fcf26,Użytkownik 5,user,
+75edd3ba-66af-4156-ab25-8be64889fdd6,Użytkownik 3,user,
+80dfae86-1f46-4cc4-aeca-32ea4dcc94f4,Administrator,admin,75a723d3-ec59-4e4a-86f2-b1c400bfa32a
+54df5c71-d8d4-4e40-b687-642db3ff66a9,Użytkownik,user,

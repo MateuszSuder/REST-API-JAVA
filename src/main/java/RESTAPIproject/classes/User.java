@@ -14,6 +14,10 @@ public class User implements java.io.Serializable {
     private Permission permission;
     private final UUID ID;
 
+    /**
+     * Konstruktor
+     * @param username nazwa użytkownika
+     */
     public User(String username) {
         this.username = username;
         this.permission = Permission.user;
@@ -21,6 +25,12 @@ public class User implements java.io.Serializable {
         ID = UUID.randomUUID();
     }
 
+    /**
+     * Konstruktor
+     * @param username nazwa użytkownika
+     * @param permission prawa użytkownika
+     * @param id id użytkownika
+     */
     public User(String username, Permission permission, UUID id) {
         this.username = username;
         this.permission = permission;
@@ -91,10 +101,18 @@ public class User implements java.io.Serializable {
         return ID;
     }
 
+    /**
+     * Dodaje zamówienia do użytkownika
+     * @param o zamówienie do dodania
+     */
     public void addOrder(Order o) {
         orders.add(o);
     }
 
+    /**
+     * Zwraca zamówienia użytkownika
+     * @return Lista zamówień
+     */
     public ArrayList<Order> getOrders() {
         return orders;
     }
